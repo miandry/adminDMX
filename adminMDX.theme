@@ -1,0 +1,13 @@
+<?php
+
+use Drupal\node\Entity\Node;
+
+/**
+ * Implements hook_preprocess_HOOK() for page templates.
+ */
+function adminMDX_preprocess_page(&$variables) {
+  // Charger les 5 derniers articles publiés
+  $article = [1,2,3] ;
+  // Injecter dans drupalSettings
+  $variables['#attached']['drupalSettings']['vueArticles'] = $article;
+}
