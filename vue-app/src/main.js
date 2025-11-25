@@ -1,16 +1,13 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import { createPinia } from 'pinia'
 
 import App from './App.vue'
-import Home from './pages/Home.vue'
-import About from './pages/About.vue'
-import UserList from './pages/user/UserList.vue'
+import CardTransaction from './pages/CardTransaction.vue'
 
 
 const routes = [
-  { path: '/', component: Home },
-  { path: '/about', component: About },
-  { path: '/users', component: UserList }
+  { path: '/', component: CardTransaction }
 ]
 
 const router = createRouter({
@@ -18,9 +15,11 @@ const router = createRouter({
   routes,
 })
 
+const pinia = createPinia();
+
 document.addEventListener("DOMContentLoaded", () => {
   const el = document.querySelector('#vue-app')
   if (el) {
-    createApp(App).use(router).mount('#vue-app')
+    createApp(App).use(pinia).use(router).mount('#vue-app')
   }
 })
