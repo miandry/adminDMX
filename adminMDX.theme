@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 
 /**
@@ -10,4 +11,10 @@ function adminMDX_preprocess_page(&$variables) {
   $article = [1,2,3] ;
   // Injecter dans drupalSettings
   $variables['#attached']['drupalSettings']['vueArticles'] = $article;
+
+  $data = [
+    'baseUrl' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString()
+  ];
+
+  $variables['#attached']['drupalSettings']['data'] = $data;
 }
