@@ -122,6 +122,8 @@ function resetInput() {
     displayResults.value = '';
     errorMessage.value = '';
     hasError.value = false;
+    dataResults.value = '';
+    totalResults.value = '';
 }
 
 // Soumettre uniquement si pas d'erreur
