@@ -1,8 +1,8 @@
 <template>
     <div>
-        <PageLoader v-if="transactionStore.loading || clientStore.loading" />
+        <PageLoader v-if="transactionStore.loading" />
         <main class="p-3 h-screen overflow-y-auto">
-            <TransactionForm @openHistory="toggleHistory" @openSaveForm="toggleSaveForm" ref="transactionFormRef"/>
+            <TransactionForm @openHistory="toggleHistory" @openSaveForm="toggleSaveForm" ref="transactionFormRef" />
         </main>
         <SaveFormData @closeSaveForm="toggleSaveForm" v-if="isFormOpen" :results="results" @saved="refreshHistory" />
         <HistoryPannel :class="[
@@ -30,6 +30,11 @@ const clientStore = useClientStore()
 
 const toggleHistory = () => {
     isOpen.value = !isOpen.value
+    if (isOpen.value == true) {
+        if (historyRef.value) {
+            historyRef.value.fetchTransactions();
+        }
+    }
 }
 
 const toggleSaveForm = (data = null) => {

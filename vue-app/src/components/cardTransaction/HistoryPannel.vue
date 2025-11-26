@@ -29,6 +29,12 @@
                     <div class="space-y-2">
                         <div>
                             <div class="text-xs text-gray-600 mb-1">Expression:</div>
+                            <div class="text-sm text-gray-800 rounded mb-1 font-mono text-xs" v-if="transaction.field_ref">
+                                <div class="flex justify-between items-center py-1">
+                                    <span class="text-xs font-medium text-gray-700">Liaison: {{ transaction.field_ref.title }} -
+                                        {{ Number(transaction.field_ref.field_total).toLocaleString('fr-FR') }} Ar</span>
+                                </div>
+                            </div>
                             <div class="text-sm text-gray-800 bg-white rounded px-2 py-1 font-mono text-xs"
                                 v-html="transaction.field_expression.replace(/\r?\n/g, '<br>')">
                             </div>
@@ -86,6 +92,9 @@ const queryOptions = ref({
         'field_ref',
         'field_total'
     ],
+    values: {
+        field_ref: ['title', 'nid', 'field_total']
+    },
     sort: { val: 'nid', op: 'desc' },
     filters: {},
     pager: 0,
@@ -100,9 +109,9 @@ defineExpose({
     fetchTransactions
 });
 
-onMounted(() => {
-    fetchTransactions(false);
-})
+// onMounted(() => {
+//     fetchTransactions(false);
+// })
 
 </script>
 

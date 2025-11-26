@@ -14,11 +14,7 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none" rows="3"
                         placeholder="Ajouter une note..."></textarea>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Relier a</label>
-                    <input type="text" placeholder="Nom du client"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
-                </div>
+                <ReferenceInput @sendTransactionId="setNidField" />
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
                     <input type="date" v-model="form.field_date" :class="{ 'border-red-500': errors.field_date }"
@@ -28,7 +24,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Client</label>
                     <div class="relative">
-                        <select v-model="form.field_client" :class="{ 'border-red-500': errors.field_client }"
+                        <select v-model="form.field_client" :class="{ 'border-red-500': errors.field_client }" @click="fetchClients"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm appearance-none bg-white capitalize">
                             <option value="">Sélectionner une Client</option>
                             <option v-for="client in clientStore.clients.rows" :key="client.nid" :value="client.nid">
@@ -66,9 +62,11 @@
 import { onMounted, reactive, ref, watch } from 'vue'
 import { toast } from 'vue-sonner';
 import { useClientStore, useTransactionStore } from '../../stores/index.js'
+import ReferenceInput from "../cardTransaction/ReferenceInput.vue"
 
 const clientStore = useClientStore();
 const transactionStore = useTransactionStore();
+const totalRef = ref(0);
 
 const emit = defineEmits(['closeSaveForm', 'saved']);
 // Paramètres dynamiques de la requête
@@ -90,6 +88,7 @@ const form = reactive({
     title: "Ref",
     field_client: '',
     field_date: '',
+    field_ref: '',
     field_expression: '',
     field_note: '',
     field_total: '',
@@ -112,8 +111,13 @@ const fetchClients = async () => {
 
 const handleSubmit = async () => {
     if (!validateForm()) return
+    form.field_total += parseFloat(totalRef.value)
+    const payload = { ...form };
+    if (!payload.field_ref) {
+        delete payload.field_ref;
+    }
     try {
-        await transactionStore.saveTransactionData(form);
+        await transactionStore.saveTransactionData(payload);
     } catch (error) {
         toast.error("Une erreur est survenue lors de l'enregistrement !")
     }
@@ -149,6 +153,13 @@ const validateForm = () => {
     return valid
 }
 
+const setNidField = (data) => {
+    if (data.nid) {
+        form.field_ref = data.nid
+        totalRef.value = data.total
+    }
+}
+
 watch(
     () => props.results,
     (data) => {
@@ -161,7 +172,6 @@ watch(
 onMounted(() => {
     const today = new Date().toISOString().substr(0, 10) // format yyyy-mm-dd
     form.field_date = today
-    fetchClients();
 })
 </script>
 
