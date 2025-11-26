@@ -24,7 +24,8 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Client</label>
                     <div class="relative">
-                        <select v-model="form.field_client" :class="{ 'border-red-500': errors.field_client }" @click="fetchClients"
+                        <select v-model="form.field_client" :class="{ 'border-red-500': errors.field_client }"
+                            @click="fetchClients"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm appearance-none bg-white capitalize">
                             <option value="">Sélectionner une Client</option>
                             <option v-for="client in clientStore.clients.rows" :key="client.nid" :value="client.nid">
@@ -111,6 +112,7 @@ const fetchClients = async () => {
 
 const handleSubmit = async () => {
     if (!validateForm()) return
+    form.field_client = parseInt(form.field_client, 10)
     form.field_total += parseFloat(totalRef.value)
     const payload = { ...form };
     if (!payload.field_ref) {
@@ -155,7 +157,7 @@ const validateForm = () => {
 
 const setNidField = (data) => {
     if (data.nid) {
-        form.field_ref = data.nid
+        form.field_ref = parseInt(data.nid, 10);
         totalRef.value = data.total
     }
 }
