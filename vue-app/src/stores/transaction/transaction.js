@@ -60,18 +60,18 @@ export const useTransactionStore = defineStore("transaction", () => {
         throw new Error("Impossible de récupérer l'ID de la transaction.");
       }
 
-      // const transactionId = Number(response.data.item);
+      const transactionId = Number(response.data.item);
 
       // Mettre à jour localement le titre
-      // const updatedTransaction = {
-      //   entity_type: "node",
-      //   bundle: "card_transaction",
-      //   title: `Ref-${transactionId}`,
-      //   nid: transactionId,
-      // };
+      const updatedTransaction = {
+        entity_type: "node",
+        bundle: "card_transaction",
+        title: `Ref-${transactionId}`,
+        nid: transactionId,
+      };
 
       // Ici, on envoie une seule requête pour créer + titre
-      // const finalResponse = await saveTransaction(updatedTransaction);
+      const finalResponse = await saveTransaction(updatedTransaction);
     } catch (err) {
       console.error("Erreur lors de la sauvegarde:", err);
       error.value = err;
