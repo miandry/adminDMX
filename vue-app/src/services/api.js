@@ -37,3 +37,8 @@ export function saveItem(newItem) {
   let path = "/crud/save";
   return api.post(path, newItem);
 }
+
+export function deleteItem(entity, id) {
+  let path = `/confirm/${entity}/${id}/delete`;
+  return api.get(path);
+}

@@ -10,7 +10,7 @@
             </button>
         </div>
         <div class="overflow-y-auto h-full pb-4">
-            <div class="p-4 space-y-3" v-if="transactionStore.transactions.rows.length">
+            <div class="p-4 space-y-3 mb-20" v-if="transactionStore.transactions.rows.length">
                 <!-- Example calculations -->
                 <div v-for="transaction in transactionStore.transactions.rows" :key="transaction.nid"
                     class="bg-gray-50 rounded-lg p-3 border border-gray-200">
@@ -22,17 +22,20 @@
                             <div class="text-sm font-medium text-green-500">{{ transaction.title }}</div>
                             <div class="text-xs text-gray-500">{{ transaction.field_date }}</div>
                         </div>
-                        <button class="text-gray-400 hover:text-red-500 ml-2">
+                        <button class="text-gray-400 hover:text-red-500 ml-2" @click="confirmDelete(transaction)">
                             <i class="ri-delete-bin-line text-sm text-red-500"></i>
                         </button>
                     </div>
-                    <div class="space-y-2">
+                    <div class="">
                         <div>
                             <div class="text-xs text-gray-600 mb-1">Expression:</div>
-                            <div class="text-sm text-gray-800 rounded mb-1 font-mono text-xs" v-if="transaction.field_ref">
+                            <div class="text-sm text-gray-800 rounded mb-1 font-mono text-xs"
+                                v-if="transaction.field_ref">
                                 <div class="flex justify-between items-center py-1">
-                                    <span class="text-xs font-medium text-gray-700">Liaison: {{ transaction.field_ref.title }} -
-                                        {{ Number(transaction.field_ref.field_total).toLocaleString('fr-FR') }} Ar</span>
+                                    <span class="text-xs font-medium text-gray-700">Liaison: {{
+                                        transaction.field_ref.title }} -
+                                        {{ Number(transaction.field_ref.field_total).toLocaleString('fr-FR') }}
+                                        Ar</span>
                                 </div>
                             </div>
                             <div class="text-sm text-gray-800 bg-white rounded px-2 py-1 font-mono text-xs"
@@ -46,7 +49,7 @@
                                     Number(transaction.field_total).toLocaleString('fr-FR') }} Ar</span>
                             </div>
                         </div>
-                        <div class="mt-2">
+                        <div class="">
                             <div class="text-xs text-gray-600 mb-1">Note:</div>
                             <div class="text-sm text-gray-700">
                                 {{ transaction.field_note }}
@@ -55,31 +58,59 @@
                     </div>
                     <div class="flex gap-2 mt-3">
                         <button
-                            class="flex-1 bg-primary hover:bg-primary/90 text-white py-1.5 px-3 !rounded-button text-xs font-medium">
-                            <i class="ri-download-line mr-1"></i>
+                            class="flex-1 bg-purple-400 hover:bg-purple-500 text-white py-1.5 px-3 !rounded-button text-xs font-medium">
+                            <i class="ri-edit-line mr-1"></i>
                             Charger
                         </button>
-                        <button
+                        <button @click="goToDetails(transaction.nid)"
                             class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-1.5 px-3 !rounded-button text-xs font-medium">
-                            <i class="ri-file-copy-line mr-1"></i>
-                            Dupliquer
+                            <i class="ri-information-line mr-1"></i>
+                            Details
                         </button>
                     </div>
                 </div>
+                <div v-if="canLoadMore">
+                    <button @click="loadMore"
+                        class="w-full bg-primary hover:bg-primary/90 text-white py-1.5 px-3 !rounded-button text-xs font-medium">
+                        <i class="ri-add-line mr-1"></i>
+                        Voir plus
+                    </button>
+                </div>
+
             </div>
             <div v-else class="flex flex-col items-center justify-center h-48 text-gray-500">
                 <i class="ri-history-line text-4xl mb-2"></i>
                 <p class="text-sm">Aucun calcul enregistré</p>
             </div>
         </div>
+        <div v-if="showConfirm" class="fixed inset-0 z-50 flex items-center justify-center">
+            <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+            <div class="relative bg-white rounded-xl p-6 w-80 space-y-4">
+                <h3 class="text-lg font-medium text-gray-900">Supprimer {{ tr.title }}</h3>
+                <p class="text-gray-600">Cette action est irréversible. Êtes-vous sûr de vouloir supprimer?</p>
+                <div class="flex space-x-3">
+                    <button class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium"
+                        @click="showConfirm = false">Annuler</button>
+                    <button @click="deleteTransaction"
+                        class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium">Supprimer</button>
+                </div>
+            </div>
+        </div>
     </div>
+
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref, watch } from 'vue';
+import { toast } from 'vue-sonner';
 import { useTransactionStore } from '../../stores/transaction/transaction.js';
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const transactionStore = useTransactionStore();
+const showConfirm = ref(false);
+const trIdToDelete = ref(0);
+const tr = ref({});
 // Paramètres dynamiques de la requête
 const queryOptions = ref({
     fields: [
@@ -105,13 +136,55 @@ const fetchTransactions = async (append = false) => {
     await transactionStore.fetchTransactions(queryOptions.value, append)
 }
 
+// Bouton "Voir plus"
+const loadMore = () => {
+    queryOptions.value.pager += 1
+    fetchTransactions(true)
+}
+
+// Déterminer si on peut charger plus
+const canLoadMore = ref(true);
+watch(
+    () => transactionStore.transactions,
+    (trs) => {
+        if (!trs || !trs.rows) return
+        canLoadMore.value = trs.rows.length < (trs.total || 0)
+    },
+    { deep: true, immediate: true }
+)
+
+
+const confirmDelete = (data) => {
+    if (data) {
+        tr.value = data;
+        trIdToDelete.value = data.nid
+        showConfirm.value = true;
+    }
+}
+
+const deleteTransaction = async () => {
+    if (trIdToDelete.value && trIdToDelete.value != 0) {
+        await transactionStore.destroyTransaction(trIdToDelete.value);
+    }
+
+    if (transactionStore.error) {
+        toast.error("Une erreur c'est produit lors de la suppression !");
+        return
+    }
+
+    toast.success("Suppression effectué avec succès !")
+    showConfirm.value = false;
+    trIdToDelete.value = null;
+}
+
+function goToDetails(id) {
+    router.push({ name: 'transaction.details', params: { id } })
+}
+
 defineExpose({
     fetchTransactions
 });
 
-// onMounted(() => {
-//     fetchTransactions(false);
-// })
 
 </script>
 

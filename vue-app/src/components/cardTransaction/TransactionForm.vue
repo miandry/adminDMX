@@ -1,21 +1,21 @@
 <template>
-    <div>
+    <div class="h-full">
         <!-- Input/Output Section -->
-        <section class="mt-2">
-            <div class="bg-white rounded-lg p-3 shadow-sm">
-                <div class="space-y-2">
-                    <div>
+        <section class="mt-2 h-4/5">
+            <div class="bg-white rounded-lg p-3 shadow-sm h-full">
+                <div class="space-y-2 h-full">
+                    <div class="h-1/2">
                         <label class="block text-xs font-medium text-gray-700 mb-1">Résultat</label>
                         <textarea :value="displayResults"
-                            class="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 resize-none min-h-20"
+                            class="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 resize-none min-h-20 h-5/6"
                             readonly placeholder="Résultat calculé"></textarea>
                     </div>
-                    <div>
+                    <div class="h-1/2">
                         <label class="block text-xs font-medium text-gray-700 mb-1">Valeur d'Entrée</label>
-                        <div class="relative">
+                        <div class="relative h-full">
                             <textarea v-model="inputValue"
                                 :class="{ 'border-red-500': errorMessage, 'border-gray-300': !errorMessage }"
-                                class="w-full px-2 py-2 border rounded-lg text-sm resize-none min-h-20 overflow-hidden"
+                                class="w-full h-4/5 px-2 py-2 border rounded-lg text-sm min-h-20 overflow-hidden"
                                 placeholder="Saisir une valeur"></textarea>
                             <p v-if="errorMessage" class="text-red-500 text-xs mt-1">{{ errorMessage }}</p>
                         </div>
@@ -84,26 +84,43 @@ function calculateResults() {
 
     lines.forEach((line, index) => {
         const trimmed = line.trim();
-        if (!trimmed) return; // ignorer les lignes vides
+        if (!trimmed) return;
 
         try {
-            // Enlever le signe = si présent et remplacer × par *
-            const expr = trimmed.includes('=') ? trimmed.split('=')[0].trim() : trimmed;
-            const value = Function(`return ${expr.replace(/×/g, '*')}`)();
+            // Séparer expression et commentaire
+            const [exprPart, commentPart] = trimmed.split('#');
+
+            const expr = exprPart
+                .trim()
+                .replace(/×/g, '*')
+                .replace(/=/g, '');
+
+            if (!expr) return;
+
+            const value = Function(`return ${expr}`)();
             totalResults.value += value;
+
             const formattedValue = formatNumber(value);
 
-            // Affichage lisible
-            const displayLine = expr.replace('*', '×') + ' = ' + formattedValue;
-            results.push(`Ligne ${index + 1}: ${displayLine}`);
-            formatedResults.push(`${displayLine}`);
+            const exprForDisplay = expr.replace(/\*/g, '×').trim();
+
+            // Reconstruction de la ligne avec commentaire
+            const comment = commentPart ? ` #${commentPart.trim()}` : '';
+
+            const savedLine = `${exprForDisplay} = ${formattedValue}${comment}`;
+
+            // Ligne pour dataResults (sans commentaire)
+            const displayLine = `${exprForDisplay} = ${formattedValue}`;
+
+            results.push(displayLine);
+            formatedResults.push(savedLine);
+
         } catch {
             results.push(`Ligne ${index + 1}: Erreur dans l'expression`);
-            hasError.value = true; // on signale l'erreur
+            hasError.value = true;
         }
     });
 
-    // Mettre un message d'erreur sous le champ si une ligne est invalide
     if (hasError.value) {
         errorMessage.value = 'Une ou plusieurs expressions sont invalides.';
         displayResults.value = '';
@@ -115,6 +132,7 @@ function calculateResults() {
         errorMessage.value = '';
     }
 }
+
 
 // Réinitialiser l'entrée et le résultat
 function resetInput() {

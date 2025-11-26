@@ -4,10 +4,12 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import CardTransaction from './pages/CardTransaction.vue'
+import TransactionDetails from './pages/TransactionDetails.vue'
 
 
 const routes = [
-  { path: '/', component: CardTransaction }
+  { path: '/', component: CardTransaction, name: 'home' },
+  { path: '/transaction/:id', component: TransactionDetails, name: 'transaction.details' }
 ]
 
 const router = createRouter({

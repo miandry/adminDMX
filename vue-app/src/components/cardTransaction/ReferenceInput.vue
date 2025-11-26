@@ -1,13 +1,13 @@
 <template>
     <div class="relative">
-        <div v-if="isSelected" class="mb-4 relative">
-            <input type="text" v-model="transRef" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                readonly />
-            <i @click="clearSelectedTransaction"
-                class="ri-close-line text-xl absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"></i>
-        </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Relier a</label>
+            <div v-if="isSelected" class="mb-4 relative">
+                <input type="text" v-model="transRef" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    readonly />
+                <i @click="clearSelectedTransaction"
+                    class="ri-close-line text-xl absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"></i>
+            </div>
             <input type="text" placeholder="Nom du client" @keyup="searchClient" v-model="searchKeywordClient"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
         </div>
