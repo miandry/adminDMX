@@ -4,12 +4,11 @@
             <h3 class="text-lg font-semibold text-gray-900">
                 Details
             </h3>
-            <router-link to="/" class="text-gray-400 hover:text-gray-600">
+            <button class="text-gray-400 hover:text-gray-600" @click="$emit('closeDetails')">
                 <i class="ri-close-line text-xl"></i>
-            </router-link>
+            </button>
         </div>
         <div class="p-4 space-y-3 mb-20">
-            <!-- Example calculations -->
             <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
                 <div class="flex justify-between items-start mb-2">
                     <div class="flex-1">
@@ -19,7 +18,7 @@
                         <div class="text-sm font-medium text-green-500">{{ tr.title }}</div>
                         <div class="text-xs text-gray-500">{{ tr.field_date }}</div>
                     </div>
-                    <button class="text-gray-400 hover:text-red-500 ml-2" @click="confirmDelete(tr.nid)">
+                    <button class="text-gray-400 hover:text-red-500 ml-2" @click="openConfirmDelete(tr)">
                         <i class="ri-delete-bin-line text-sm text-red-500"></i>
                     </button>
                 </div>
@@ -85,16 +84,20 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useTransactionStore } from '../stores/index.js';
-import { useRoute } from 'vue-router'
 import { toast } from 'vue-sonner';
 
-const route = useRoute()
-const id = route.params.id
+const props = defineProps({
+    trId: {
+        type: Number,
+        required: true
+    }
+})
+
 const transactionStore = useTransactionStore();
 const tr = ref({});
-
+const emit = defineEmits(['openConfirmDelete']);
 const queryOptions = ref({
     fields: [
         'nid',
@@ -148,16 +151,31 @@ const totals = computed(() => {
     return { positive, negative, byComment };
 });
 
+watch(() => props.trId, async (newId) => {
+    if (newId > 0) {
+        await transactionStore.getTransaction(newId, queryOptions.value)
+        tr.value = transactionStore.transaction
+    }
+})
+
+const openConfirmDelete = (value) => {
+    const data = [value, 'details']
+    emit('openConfirmDelete', data)
+}
+
 
 onMounted(async () => {
     try {
-        await transactionStore.getTransaction(id, queryOptions.value);
+        if (props.trId > 0) {
+            await transactionStore.getTransaction(props.trId, queryOptions.value);
 
-        if (transactionStore.error) {
-            toast.error("Erreur lors du chargement de la transaction!");
-            return;
+            if (transactionStore.error) {
+                toast.error("Erreur lors du chargement de la transaction!");
+                return;
+            }
+
+            tr.value = transactionStore.transaction;
         }
-        tr.value = transactionStore.transaction
     } catch (error) {
         toast.error("Une erreur est survenue!");
     }

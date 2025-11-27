@@ -22,7 +22,7 @@
                             <div class="text-sm font-medium text-green-500">{{ transaction.title }}</div>
                             <div class="text-xs text-gray-500">{{ transaction.field_date }}</div>
                         </div>
-                        <button class="text-gray-400 hover:text-red-500 ml-2" @click="confirmDelete(transaction)">
+                        <button class="text-gray-400 hover:text-red-500 ml-2" @click="openConfirmDelete(transaction)">
                             <i class="ri-delete-bin-line text-sm text-red-500"></i>
                         </button>
                     </div>
@@ -33,7 +33,7 @@
                                 v-if="transaction.field_ref">
                                 <div class="flex justify-between items-center py-1">
                                     <span class="text-xs font-medium text-gray-700">Liaison: {{
-                                        transaction.field_ref.title }} -
+                                        transaction.field_ref.title }} =
                                         {{ Number(transaction.field_ref.field_total).toLocaleString('fr-FR') }}
                                         Ar</span>
                                 </div>
@@ -50,7 +50,6 @@
                             </div>
                         </div>
                         <div class="">
-                            <div class="text-xs text-gray-600 mb-1">Note:</div>
                             <div class="text-sm text-gray-700">
                                 {{ transaction.field_note }}
                             </div>
@@ -83,34 +82,16 @@
                 <p class="text-sm">Aucun calcul enregistré</p>
             </div>
         </div>
-        <div v-if="showConfirm" class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-            <div class="relative bg-white rounded-xl p-6 w-80 space-y-4">
-                <h3 class="text-lg font-medium text-gray-900">Supprimer {{ tr.title }}</h3>
-                <p class="text-gray-600">Cette action est irréversible. Êtes-vous sûr de vouloir supprimer?</p>
-                <div class="flex space-x-3">
-                    <button class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium"
-                        @click="showConfirm = false">Annuler</button>
-                    <button @click="deleteTransaction"
-                        class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium">Supprimer</button>
-                </div>
-            </div>
-        </div>
     </div>
 
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
 import { useTransactionStore } from '../../stores/transaction/transaction.js';
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const transactionStore = useTransactionStore();
-const showConfirm = ref(false);
-const trIdToDelete = ref(0);
-const tr = ref({});
+const emit = defineEmits(['openDetails', 'openConfirmDelete']);
 // Déterminer si on peut charger plus
 const canLoadMore = ref(false);
 // Paramètres dynamiques de la requête
@@ -153,32 +134,14 @@ watch(
     { deep: true, immediate: true }
 )
 
-
-const confirmDelete = (data) => {
-    if (data) {
-        tr.value = data;
-        trIdToDelete.value = data.nid
-        showConfirm.value = true;
-    }
+// show modal
+const openConfirmDelete = (value) => {
+    const data = [value, 'history']
+    emit('openConfirmDelete', data)
 }
 
-const deleteTransaction = async () => {
-    if (trIdToDelete.value && trIdToDelete.value != 0) {
-        await transactionStore.destroyTransaction(trIdToDelete.value);
-    }
-
-    if (transactionStore.error) {
-        toast.error("Une erreur c'est produit lors de la suppression !");
-        return
-    }
-
-    toast.success("Suppression effectué avec succès !")
-    showConfirm.value = false;
-    trIdToDelete.value = null;
-}
-
-function goToDetails(id) {
-    router.push({ name: 'transaction.details', params: { id } })
+const goToDetails = (id) => {
+    emit('openDetails', id);
 }
 
 defineExpose({

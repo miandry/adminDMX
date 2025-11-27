@@ -4,18 +4,18 @@
         <section class="mt-2 h-4/5">
             <div class="bg-white rounded-lg p-3 shadow-sm h-full">
                 <div class="space-y-2 h-full">
-                    <div class="h-1/2">
+                    <div class="">
                         <label class="block text-xs font-medium text-gray-700 mb-1">Résultat</label>
-                        <textarea :value="displayResults"
-                            class="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 resize-none min-h-20 h-5/6"
-                            readonly placeholder="Résultat calculé"></textarea>
+                        <textarea :value="totalResults"
+                            class="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 resize-none"
+                            readonly placeholder="Résultat calculé" rows="1"></textarea>
                     </div>
-                    <div class="h-1/2">
+                    <div class="h-full">
                         <label class="block text-xs font-medium text-gray-700 mb-1">Valeur d'Entrée</label>
-                        <div class="relative h-full">
+                        <div class="relative h-4/5">
                             <textarea v-model="inputValue"
                                 :class="{ 'border-red-500': errorMessage, 'border-gray-300': !errorMessage }"
-                                class="w-full h-4/5 px-2 py-2 border rounded-lg text-sm min-h-20 overflow-hidden"
+                                class="w-full h-full px-2 py-2 border rounded-lg text-sm min-h-20 overflow-hidden"
                                 placeholder="Saisir une valeur"></textarea>
                             <p v-if="errorMessage" class="text-red-500 text-xs mt-1">{{ errorMessage }}</p>
                         </div>
@@ -60,7 +60,7 @@ const displayResults = ref('');
 const dataResults = ref('');
 const errorMessage = ref('');
 const hasError = ref(false);
-const totalResults = ref(0);
+const totalResults = ref('');
 const emit = defineEmits(['openSaveForm', 'openHistory']);
 
 defineExpose({
@@ -149,7 +149,7 @@ function sendTransactionData() {
     if (!hasError.value && dataResults.value) {
         const data = {
             exp: dataResults.value,
-            total: totalResults.value
+            total: parseFloat(totalResults.value)
         };
         emit('openSaveForm', data);
     }
