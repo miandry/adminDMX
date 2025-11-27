@@ -65,8 +65,8 @@
                         </div>
                     </div>
                     <div class="mt-2">
-                        <div class="text-xs text-gray-600 mb-1">Note:</div>
-                        <div class="text-sm text-gray-700 ms-4">
+                        <div class="text-xs text-gray-600 mb-1 hidden">Note:</div>
+                        <div class="text-sm text-gray-700">
                             {{ tr.field_note }}
                         </div>
                     </div>

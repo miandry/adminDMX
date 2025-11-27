@@ -6,6 +6,7 @@ import { buildQueryParams } from "../../utils/queryBuilder.js";
 export const useClientStore = defineStore("client", () => {
   const clients = ref({ rows: [], total: 0 });
   const client = ref([]);
+  const newClientId = ref('');
   const loading = ref(false);
   const error = ref(null);
 
@@ -41,8 +42,7 @@ export const useClientStore = defineStore("client", () => {
       loading.value = true;
     try {
       const response = await saveClient(data);
-    //   const newClient = await fetchClient(response.data.item);
-    //   client.value = newClient;
+      newClientId.value = response.data.item;
     } catch (err) {
       error.value = err;
     } finally {
@@ -57,5 +57,6 @@ export const useClientStore = defineStore("client", () => {
     error,
     fetchClients,
     saveClientData,
+    newClientId
   };
 });
