@@ -87,6 +87,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       const res = await deleteTransaction(id);
       if (res.data.status) {
         transactions.value.rows = transactions.value.rows.filter((t) => t.nid != id);
+        transactions.value.total -= 1; 
       }
     } catch (err) {
       error.value = err;

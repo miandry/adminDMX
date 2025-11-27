@@ -111,6 +111,8 @@ const transactionStore = useTransactionStore();
 const showConfirm = ref(false);
 const trIdToDelete = ref(0);
 const tr = ref({});
+// Déterminer si on peut charger plus
+const canLoadMore = ref(false);
 // Paramètres dynamiques de la requête
 const queryOptions = ref({
     fields: [
@@ -142,8 +144,6 @@ const loadMore = () => {
     fetchTransactions(true)
 }
 
-// Déterminer si on peut charger plus
-const canLoadMore = ref(true);
 watch(
     () => transactionStore.transactions,
     (trs) => {
