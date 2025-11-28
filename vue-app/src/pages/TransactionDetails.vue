@@ -28,7 +28,7 @@
                         <div class="text-sm text-gray-800 rounded mb-1 font-mono text-xs" v-if="tr.field_ref">
                             <div class="flex justify-between items-center py-1">
                                 <span class="text-xs font-medium text-gray-700">Liaison: {{
-                                    tr.field_ref.title }} -
+                                    tr.field_ref.title }} =
                                     {{
                                         Number(tr.field_ref.field_total).toLocaleString('fr-FR')
                                     }}
@@ -72,7 +72,7 @@
                     </div>
                 </div>
                 <div class="flex gap-2 mt-3">
-                    <button
+                    <button @click="sendEditData(tr)"
                         class="flex-1 bg-primary hover:bg-primary/90 text-white py-1.5 px-3 !rounded-button text-xs font-medium">
                         <i class="ri-edit-line mr-1"></i>
                         Charger
@@ -92,12 +92,13 @@ const props = defineProps({
     trId: {
         type: Number,
         required: true
-    }
+    },
+    refreshKey: Number
 })
 
 const transactionStore = useTransactionStore();
 const tr = ref({});
-const emit = defineEmits(['openConfirmDelete']);
+const emit = defineEmits(['openConfirmDelete', 'closeDetails']);
 const queryOptions = ref({
     fields: [
         'nid',
@@ -110,7 +111,7 @@ const queryOptions = ref({
         'field_total'
     ],
     values: {
-        field_ref: ['title', 'nid', 'field_total']
+        field_ref: ['title', 'nid', 'field_total', 'field_client']
     }
 })
 
@@ -151,9 +152,9 @@ const totals = computed(() => {
     return { positive, negative, byComment };
 });
 
-watch(() => props.trId, async (newId) => {
-    if (newId > 0) {
-        await transactionStore.getTransaction(newId, queryOptions.value)
+watch(() => [props.trId, props.refreshKey], async () => {
+    if (props.trId > 0) {
+        await transactionStore.getTransaction(props.trId, queryOptions.value)
         tr.value = transactionStore.transaction
     }
 })
@@ -163,6 +164,9 @@ const openConfirmDelete = (value) => {
     emit('openConfirmDelete', data)
 }
 
+const sendEditData = (transaction) => {
+    emit('closeDetails', transaction)
+}
 
 onMounted(async () => {
     try {

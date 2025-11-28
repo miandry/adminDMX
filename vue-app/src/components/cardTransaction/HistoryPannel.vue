@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class="flex gap-2 mt-3">
-                        <button
+                        <button @click="sendEditData(transaction)"
                             class="flex-1 bg-purple-400 hover:bg-purple-500 text-white py-1.5 px-3 !rounded-button text-xs font-medium">
                             <i class="ri-edit-line mr-1"></i>
                             Charger
@@ -91,7 +91,7 @@ import { ref, watch } from 'vue';
 import { useTransactionStore } from '../../stores/transaction/transaction.js';
 
 const transactionStore = useTransactionStore();
-const emit = defineEmits(['openDetails', 'openConfirmDelete']);
+const emit = defineEmits(['openDetails', 'openConfirmDelete', 'close']);
 // Déterminer si on peut charger plus
 const canLoadMore = ref(false);
 // Paramètres dynamiques de la requête
@@ -107,7 +107,7 @@ const queryOptions = ref({
         'field_total'
     ],
     values: {
-        field_ref: ['title', 'nid', 'field_total']
+        field_ref: ['title', 'nid', 'field_total', 'field_client']
     },
     sort: { val: 'nid', op: 'desc' },
     filters: {},
@@ -142,6 +142,10 @@ const openConfirmDelete = (value) => {
 
 const goToDetails = (id) => {
     emit('openDetails', id);
+}
+
+const sendEditData = (transaction) => {
+    emit('close', transaction)
 }
 
 defineExpose({

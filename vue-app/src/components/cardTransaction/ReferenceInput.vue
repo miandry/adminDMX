@@ -9,7 +9,7 @@
                     class="ri-close-line text-xl absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"></i>
             </div>
             <input type="text" placeholder="Nom du client" @keyup="searchClient" v-model="searchKeywordClient"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" :class="[isEdit ? 'hidden' : '']" />
         </div>
         <div v-if="showList" @mousedown.prevent
             class="max-h-48 overflow-y-auto border border-gray-300 !rounded-button bg-white absolute right-0 left-0 z-30">
@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { useClientStore, useTransactionStore } from '../../stores';
 
 const clientStore = useClientStore();
@@ -61,8 +61,14 @@ const data = reactive({
 const showList = ref(false);
 const transRef = ref('');
 const isSelected = ref(false);
+const isEdit = ref(false);
 const showTransactionList = ref(false);
+
+const props = defineProps({
+    isSelected: Object
+})
 const emit = defineEmits(['sendTransactionId']);
+
 const queryOptions = ref({
     fields: [
         'nid',
@@ -120,7 +126,7 @@ const selectClient = async (nid) => {
 }
 
 const selectTransaction = (nid, title, total) => {
-    transRef.value = `${title} - ${total} Ar`;
+    transRef.value = `${title} = ${total} Ar`;
     isSelected.value = true;
     showList.value = false;
     showTransactionList.value = false;
@@ -139,6 +145,21 @@ const clearSelectedTransaction = () => {
     searchKeywordClient.value = '';
     emit('sendTransactionId', data);
 }
+
+watch(
+    () => props.isSelected,
+    (value) => {
+        if (value.title && value.nid) {
+            isSelected.value = true
+            selectTransaction(value.nid, value.title, value.total)
+            isEdit.value = true
+        } else {
+            isSelected.value = false
+            transRef.value = '';
+        }
+    },
+    { immediate: true }
+)
 </script>
 
 <style></style>

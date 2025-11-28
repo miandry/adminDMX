@@ -49,11 +49,20 @@
                 </button>
             </div>
         </section>
+        <section class="mt-2 mb-2">
+            <div class="flex gap-2">
+                <button @click="cancelEdit" v-if="canEdit"
+                    class="flex-1 bg-yellow-500 hover:bg-yellow-400 text-white py-2.5 px-4 !rounded-button font-medium text-sm">
+                    <i class="ri-close-line mr-2"></i>
+                    Annuler la modification
+                </button>
+            </div>
+        </section>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const inputValue = ref('');
 const displayResults = ref('');
@@ -61,10 +70,15 @@ const dataResults = ref('');
 const errorMessage = ref('');
 const hasError = ref(false);
 const totalResults = ref('');
-const emit = defineEmits(['openSaveForm', 'openHistory']);
+const canEdit = ref(false);
+const emit = defineEmits(['openSaveForm', 'openHistory', 'cancelEdit']);
+const props = defineProps({
+    transToEdit: Object,
+})
 
 defineExpose({
-    resetInput
+    resetInput,
+    cancelEdit
 });
 
 // Formate les nombres avec séparateurs de milliers
@@ -151,8 +165,58 @@ function sendTransactionData() {
             exp: dataResults.value,
             total: parseFloat(totalResults.value)
         };
+        // Si on édite, on ajoute transactionInfo
+        if (props.transToEdit) {
+            data.transactionInfo = props.transToEdit;
+        }
         emit('openSaveForm', data);
     }
 }
+
+function cleanExpressionLines(text) {
+    return text
+        .split('\n')
+        .map(line => {
+            line = line.trim();
+            if (!line) return '';
+
+            // Extraire commentaire (ex: "#toky")
+            let comment = '';
+            const commentIndex = line.indexOf('#');
+
+            if (commentIndex !== -1) {
+                comment = line.slice(commentIndex).trim(); // "#toky"
+                line = line.slice(0, commentIndex).trim(); // "123×2 = 246"
+            }
+
+            // Retirer le total après "="
+            const expr = line.split('=')[0].trim(); // "123×2"
+
+            // Remplacer × par *
+            const cleanedExpr = expr.replace(/×/g, '*');
+
+            return comment ? `${cleanedExpr} ${comment}` : cleanedExpr;
+        })
+        .join('\n');
+}
+
+function cancelEdit() {
+    resetInput();
+    canEdit.value = false
+    emit('cancelEdit')
+}
+
+watch(
+    () => props.transToEdit,
+    (val) => {
+        if (val) {
+            canEdit.value = true
+            inputValue.value = cleanExpressionLines(val.field_expression);
+            calculateResults();
+        }
+    },
+    { deep: true, immediate: true }
+);
+
 </script>
 <style></style>

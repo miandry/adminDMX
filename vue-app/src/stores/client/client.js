@@ -24,20 +24,6 @@ export const useClientStore = defineStore("client", () => {
     }
   }
 
-//   async function fetchClient(id) {
-//     loading.value = true;
-//     const query = `filters[nid][val]=${id}`;
-//     try {
-//       const response = await getClients(query);
-//       client.value = response.data.rows[0];
-//       return response.data.rows[0];
-//     } catch (err) {
-//       error.value = err;
-//     } finally {
-//       loading.value = false;
-//     }
-//   }
-
   async function saveClientData(data) {
       loading.value = true;
     try {

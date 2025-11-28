@@ -13,6 +13,7 @@ export const useTransactionStore = defineStore("transaction", () => {
   const transaction = ref([]);
   const loading = ref(false);
   const error = ref(null);
+  const transactionId = ref(0);
 
   // fetchTransactions: si append=true, on ajoute les nouvelles données
   async function fetchTransactions(options, append = false) {
@@ -61,18 +62,19 @@ export const useTransactionStore = defineStore("transaction", () => {
         throw new Error("Impossible de récupérer l'ID de la transaction.");
       }
 
-      const transactionId = Number(response.data.item);
+      const transId = Number(response.data.item);
 
       // Mettre à jour localement le titre
       const updatedTransaction = {
         entity_type: "node",
         bundle: "card_transaction",
-        title: `Ref-${transactionId}`,
-        nid: transactionId,
+        title: `Ref-${transId}`,
+        nid: transId,
       };
 
       // Ici, on envoie une seule requête pour créer + titre
       const finalResponse = await saveTransaction(updatedTransaction);
+      transactionId.value = transId;
     } catch (err) {
       error.value = err;
     } finally {
@@ -101,6 +103,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     transaction,
     loading,
     error,
+    transactionId,
     getTransaction,
     fetchTransactions,
     saveTransactionData,
