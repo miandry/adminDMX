@@ -1,7 +1,7 @@
 <template>
-    <div class="h-full">
+    <div class="h-6/6">
         <!-- Input/Output Section -->
-        <section class="mt-2 h-4/5">
+        <section class="mt-2 h-4/6">
             <div class="bg-white rounded-lg p-3 shadow-sm h-full">
                 <div class="space-y-2 h-full">
                     <div class="">
@@ -10,7 +10,7 @@
                             class="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 resize-none"
                             readonly placeholder="Résultat calculé" rows="1"></textarea>
                     </div>
-                    <div class="h-full">
+                    <div class="h-4/5">
                         <label class="block text-xs font-medium text-gray-700 mb-1">Valeur d'Entrée</label>
                         <div class="relative h-4/5">
                             <textarea v-model="inputValue"
