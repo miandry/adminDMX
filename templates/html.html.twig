@@ -26,216 +26,146 @@
 
 <!DOCTYPE html>
 <html>
-	<head>
-		<head-placeholder token="{{ placeholder_token }}">
-			<title>{{ head_title|safe_join(' | ') }}</title>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-			<css-placeholder token="{{ placeholder_token }}">
-				<js-placeholder
-					token="{{ placeholder_token }}">
-					 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-					<link rel="preconnect" href="https://fonts.googleapis.com"/>
-					<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-					<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <head>
+    <title>{{ head_title|safe_join(' | ') }}</title>
+        <meta charset="UTF-8" />
+         <meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+/>
+    <css-placeholder token="{{ placeholder_token }}">
+    <js-placeholder token="{{ placeholder_token }}">
+        <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3B82F6",
+                        secondary: "#10B981",
+                    },
+                    borderRadius: {
+                        none: "0px",
+                        sm: "4px",
+                        DEFAULT: "8px",
+                        md: "12px",
+                        lg: "16px",
+                        xl: "20px",
+                        "2xl": "24px",
+                        "3xl": "32px",
+                        full: "9999px",
+                        button: "8px",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
 
-					<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
-					<link
-					rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
-					 <script>
-					        tailwind.config = {
-					            theme: {
-					                extend: {
-					                    colors: {
-					                        primary: "#3B82F6",
-					                        secondary: "#10B981",
-					                    },
-					                    borderRadius: {
-					                        none: "0px",
-					                        sm: "4px",
-					                        DEFAULT: "8px",
-					                        md: "12px",
-					                        lg: "16px",
-					                        xl: "20px",
-					                        "2xl": "24px",
-					                        "3xl": "32px",
-					                        full: "9999px",
-					                        button: "8px",
-					                    },
-					                },
-					            },
-					        };
-					    </script>
-					<style>:where([class^="ri-"])::before
-					{
-						content: "\f3c2";
-					}
+        html,
+        body {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
 
-					html,
-					body {
-						overflow-x: hidden;
-						max-width: 100vw;
-					}
+        .scanning-animation {
+            animation: pulse 2s infinite;
+        }
 
-					.scanning-animation {
-						animation: pulse 2s infinite;
-					}
+        @keyframes pulse {
 
-					@keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
 
-						0,
-						100% {
-							opacity: 1;
-						}
+            50% {
+                opacity: 0.5;
+            }
+        }
 
-						50% {
-							opacity: 0.5;
-						}
-					}
+        .device-card {
+            transition: all 0.3s ease;
+        }
 
-					.device-card {
-						transition: all 0.3s ease;
-					}
+        .device-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
 
-					.device-card:hover {
-						transform: translateY(-2px);
-						box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-					}
+        .keypad-button {
+            transition: all 0.2s ease;
+        }
 
-					.keypad-button {
-						transition: all 0.2s ease;
-					}
+        .keypad-button:active {
+            transform: scale(0.95);
+            background-color: #e5e7eb;
+        }
 
-					.keypad-button:active {
-						transform: scale(0.95);
-						background-color: #e5e7eb;
-					}
+        .custom-cursor {
+            position: relative;
+        }
 
-					.custom-cursor {
-						position: relative;
-					}
+        .custom-cursor::after {
+            content: "|";
+            position: absolute;
+            animation: blink 1s infinite;
+            color: #3b82f6;
+            font-weight: bold;
+            pointer-events: none;
+        }
 
-					.custom-cursor::after {
-						content: "|";
-						position: absolute;
-						animation: blink 1s infinite;
-						color: #3b82f6;
-						font-weight: bold;
-						pointer-events: none;
-					}
+        @keyframes blink {
 
-					@keyframes blink {
+            0%,
+            50% {
+                opacity: 1;
+            }
 
-						0,
-						50% {
-							opacity: 1;
-						}
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
 
-						51%,
-						100% {
-							opacity: 0;
-						}
-					}
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
 
-					.animate-spin {
-						animation: spin 1s linear infinite;
-					}
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
 
-					@keyframes spin {
-						from {
-							transform: rotate(0deg);
-						}
-
-						to {
-							transform: rotate(360deg);
-						}
-					}
-				</style>
-			</head>
-			<body
-				class="bg-gray-50 min-h-screen">
-				 <script> 
-				          var mydata =  (window.drupalSettings?.data || []); 
-				    </script>
-				{{ page_top }}
-				{{ page }}
-				{{ page_bottom }}
-				<js-bottom-placeholder
-					token="{{ placeholder_token }}"> <script>
-						(function() {
-						  /**
-						   * 1. Disable Zoom (Keyboard & Mouse Wheel)
-						   */
-						  window.addEventListener("keydown", function(e) {
-						    const isZoomKeyCombo = (e.ctrlKey || e.metaKey) && 
-						                           ["+", "-", "=", "0"].includes(e.key);
-						                           
-						    const isHorizontalScrollKey = ["ArrowLeft", "ArrowRight"].includes(e.key);
-						
-						    if (isZoomKeyCombo || isHorizontalScrollKey) {
-						      e.preventDefault();
-						      // Added stopPropagation to ensure nothing else handles this event
-						      e.stopPropagation(); 
-						    }
-						  }, { passive: false });
-						
-						  window.addEventListener("wheel", function(e) {
-						    // Disable zoom via Ctrl/Cmd + Mouse Wheel
-						    if (e.ctrlKey || e.metaKey) {
-						      e.preventDefault();
-						      e.stopPropagation();
-						    }
-						  }, { passive: false });
-						
-						
-						  /**
-						   * 2. Disable Zoom (Touch Gestures: Pinch & Double-Tap)
-						   */
-						  let lastTouch = 0;
-						
-						  // Block pinch-to-zoom by detecting two or more fingers
-						  window.addEventListener("touchstart", function(e) {
-						    if (e.touches.length > 1) {
-						      e.preventDefault();
-						      e.stopPropagation();
-						    }
-						  }, { passive: false });
-						
-						  // Block double-tap zoom (must be on 'touchend' for timing)
-						  window.addEventListener("touchend", function(e) {
-						    const now = Date.now();
-						    if (now - lastTouch <= 300) {
-						      // If two taps are within 300ms, prevent default (which is usually zoom)
-						      e.preventDefault(); 
-						      e.stopPropagation();
-						    }
-						    lastTouch = now;
-						  }, { passive: false });
-						
-						  // iOS Safari specific gesture block
-						  window.addEventListener("gesturestart", function(e) {
-						    e.preventDefault();
-						    e.stopPropagation();
-						  }, { passive: false });
-						
-						
-						  /**
-						   * 3. Enforce Horizontal Scroll-X Hidden (CSS Fallback/Safety)
-						   */
-						  function enforceNoScrollX() {
-						    // Hide the horizontal scrollbar and prevent body overflow
-						    document.documentElement.style.overflowX = "hidden";
-						    document.body.style.overflowX = "hidden";
-						    
-						    // Safety check to ensure content does not exceed 100% of viewport width
-						    document.body.style.maxWidth = "100vw";
-						  }
-						
-						  // Initial call and listener for dynamic window resizing
-						  enforceNoScrollX();
-						  window.addEventListener("resize", enforceNoScrollX);
-						})();
-						</script>
-				</body>
-			</body>
-		</html>
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <script> 
+          var mydata =  (window.drupalSettings?.data || []); 
+    </script>
+    {{ page_top }}
+    {{ page }}
+    {{ page_bottom }}
+    <js-bottom-placeholder token="{{ placeholder_token }}">
+    
+  </body>
+</html>
