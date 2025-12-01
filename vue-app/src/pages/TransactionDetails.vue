@@ -8,7 +8,7 @@
                 <i class="ri-close-line text-xl"></i>
             </button>
         </div>
-        <div class="p-4 space-y-3 mb-20">
+        <div class="p-4 space-y-3 pb-28 h-full overflow-y-auto">
             <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
                 <div class="flex justify-between items-start mb-2">
                     <div class="flex-1">

@@ -15,7 +15,7 @@
                         <div class="relative h-3/5">
                             <textarea v-model="inputValue"
                                 :class="{ 'border-red-500': errorMessage, 'border-gray-300': !errorMessage }"
-                                class="w-full h-full px-2 py-2 border rounded-lg text-sm min-h-20 overflow-hidden"
+                                class="w-full h-full px-2 py-2 border rounded-lg text-sm min-h-20"
                                 placeholder="Saisir une valeur"></textarea>
                             <p v-if="errorMessage" class="text-red-500 text-xs mt-1">{{ errorMessage }}</p>
                         </div>
