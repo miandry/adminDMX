@@ -184,6 +184,7 @@ const validateForm = () => {
     errors.field_date = ''
     errors.field_client = ''
     errors.field_ref = ''
+
     if (!form.field_client) {
         errors.field_client = 'Le client est requis'
         valid = false
@@ -194,8 +195,8 @@ const validateForm = () => {
         valid = false
     }
 
-    if (isLinked.value) {
-        if (!isRequiredFieldRef.value) {
+    if (isLinked.value && isRequiredFieldRef.value) {
+        if (!form.field_ref) {
             errors.field_ref = 'Ce champ est requis'
             valid = false
         }
@@ -207,8 +208,10 @@ const validateForm = () => {
 const setNidField = (data) => {
     if (data.required) {
         isRequiredFieldRef.value = true;
+        isLinked.value = true;
     } else {
         isRequiredFieldRef.value = false;
+        isLinked.value = false;
     }
     if (data.nid) {
         form.field_ref = parseInt(data.nid, 10);
@@ -251,8 +254,8 @@ watch(
                     }
                     refInputValue.value = refObj;
                     form.field_ref = data.transactionInfo.field_ref
-                    isRequiredFieldRef.value = true;
                     isLinked.value = true;
+                    isRequiredFieldRef.value = true;
                 } else {
                     refInputValue.value = {
                         nid: '',

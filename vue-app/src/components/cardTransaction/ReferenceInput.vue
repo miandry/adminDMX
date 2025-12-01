@@ -9,7 +9,8 @@
                     class="ri-close-line text-xl absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"></i>
             </div>
             <input type="text" placeholder="Nom du client" @keyup="searchClient" v-model="searchKeywordClient"
-                class="w-full px-3 py-2 border rounded-lg text-sm" :class="[ showErrorMsg ? 'border-red-500': 'border-gray-300' ]"/>
+                class="w-full px-3 py-2 border rounded-lg text-sm"
+                :class="[showErrorMsg ? 'border-red-500' : 'border-gray-300']" />
             <!-- isLinked -->
             <p v-if="showErrorMsg" class="text-red-500 text-xs mt-1">Ce champ est requis</p>
         </div>
@@ -148,6 +149,9 @@ const selectTransaction = (nid, title, total, currency = "Ar") => {
 const clearSelectedTransaction = () => {
     if (isLinked.value) {
         showErrorMsg.value = true;
+    }
+    if (isLinked.value) {
+        data.required = true;
     }
     data.nid = null;
     data.total = 0;
