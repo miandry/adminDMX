@@ -1,5 +1,5 @@
 <template>
-    <div class="h-6/6">
+    <div class="h-full">
         <!-- Input/Output Section -->
         <section class="mt-2 h-4/6">
             <div class="bg-white rounded-lg p-3 shadow-sm h-full">
