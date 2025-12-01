@@ -43,6 +43,21 @@
                     <ReferenceInput @sendTransactionId="setNidField" :isSelected="refInputValue" />
 
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <select v-model="form.field_currency"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm appearance-none bg-white">
+                                    <option value="Ar">Ariary</option>
+                                    <option value="Rmb">Rmb</option>
+                                </select>
+                                <i
+                                    class="ri-arrow-down-s-line absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Note</label>
                         <input v-model="form.field_note" type="text"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
@@ -80,6 +95,8 @@ const transactionStore = useTransactionStore();
 const totalRef = ref(0);
 const showClientForm = ref(false);
 const isEdit = ref(false);
+const isRequiredFieldRef = ref(false);
+const isLinked = ref(false);
 const refInputValue = ref({})
 
 
@@ -108,13 +125,15 @@ const form = reactive({
     field_expression: '',
     field_note: '',
     field_total: '',
+    field_currency: 'Ar',
     status: 1,
 });
 
 // Messages d'erreur
 const errors = reactive({
     field_date: '',
-    field_client: ''
+    field_client: '',
+    field_ref: '',
 })
 
 const props = defineProps({
@@ -136,8 +155,6 @@ const handleSubmit = async () => {
     if (!payload.field_ref) {
         delete payload.field_ref;
     }
-    // console.log(payload);
-    // return;
     try {
         await transactionStore.saveTransactionData(payload);
     } catch (error) {
@@ -166,21 +183,33 @@ const validateForm = () => {
     // Reset erreurs
     errors.field_date = ''
     errors.field_client = ''
+    errors.field_ref = ''
+    if (!form.field_client) {
+        errors.field_client = 'Le client est requis'
+        valid = false
+    }
 
     if (!form.field_date) {
         errors.field_date = 'La date est requise'
         valid = false
     }
 
-    if (!form.field_client) {
-        errors.field_client = 'Le client est requis'
-        valid = false
+    if (isLinked.value) {
+        if (!isRequiredFieldRef.value) {
+            errors.field_ref = 'Ce champ est requis'
+            valid = false
+        }
     }
 
     return valid
 }
 
 const setNidField = (data) => {
+    if (data.required) {
+        isRequiredFieldRef.value = true;
+    } else {
+        isRequiredFieldRef.value = false;
+    }
     if (data.nid) {
         form.field_ref = parseInt(data.nid, 10);
         totalRef.value = data.total
@@ -216,27 +245,38 @@ watch(
                     const refObj = {
                         nid: data.transactionInfo.field_ref.nid,
                         total: data.transactionInfo.field_ref.field_total,
-                        title: data.transactionInfo.field_ref.title
+                        title: data.transactionInfo.field_ref.title,
+                        currency: data.transactionInfo.field_ref.field_currency == "Ar" ? "Ar" : "Rmb",
+                        isLinked: true,
                     }
                     refInputValue.value = refObj;
                     form.field_ref = data.transactionInfo.field_ref
+                    isRequiredFieldRef.value = true;
+                    isLinked.value = true;
                 } else {
                     refInputValue.value = {
                         nid: '',
                         total: '',
-                        title: ''
+                        title: '',
+                        isLinked: false,
                     };
+                    isRequiredFieldRef.value = false;
+                    isLinked.value = false;
                 }
                 form.field_expression = data.exp
                 form.field_note = data.transactionInfo.field_note
                 form.field_total = data.total
+                form.field_currency = data.transactionInfo.field_currency == "Ar" ? "Ar" : "Rmb"
             }
         } else {
             refInputValue.value = {
                 nid: '',
                 total: '',
-                title: ''
+                title: '',
+                isLinked: false,
             };
+            isRequiredFieldRef.value = false;
+            isLinked.value = false;
             form.field_expression = data.exp;
             form.field_total = data.total;
         }

@@ -70,7 +70,7 @@
                                     <span class="text-xs font-medium text-gray-700">Liaison: {{
                                         transaction.field_ref.title }} =
                                         {{ Number(transaction.field_ref.field_total).toLocaleString('fr-FR') }}
-                                        Ar</span>
+                                        {{ transaction.field_ref.field_currency ? transaction.field_ref.field_currency : "Ar" }}</span>
                                 </div>
                             </div>
                             <div class="text-sm text-gray-800 bg-white rounded px-2 py-1 font-mono text-xs"
@@ -81,7 +81,7 @@
                             <div class="flex justify-between items-center py-1 border-t pt-2">
                                 <span class="text-xs font-medium text-gray-700">Total:</span>
                                 <span class="text-sm font-bold text-green-600">{{
-                                    Number(transaction.field_total).toLocaleString('fr-FR') }} Ar</span>
+                                    Number(transaction.field_total).toLocaleString('fr-FR') }} {{ transaction.field_currency ? transaction.field_currency : "Ar" }}</span>
                             </div>
                         </div>
                         <div class="">
@@ -147,10 +147,11 @@ const queryOptions = ref({
         'field_expression',
         'field_note',
         'field_ref',
-        'field_total'
+        'field_total',
+        'field_currency',
     ],
     values: {
-        field_ref: ['title', 'nid', 'field_total', 'field_client']
+        field_ref: ['title', 'nid', 'field_total', 'field_client', 'field_currency']
     },
     sort: { val: 'nid', op: 'desc' },
     filters: {},

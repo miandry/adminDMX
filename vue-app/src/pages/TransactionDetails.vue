@@ -31,8 +31,7 @@
                                     tr.field_ref.title }} =
                                     {{
                                         Number(tr.field_ref.field_total).toLocaleString('fr-FR')
-                                    }}
-                                    Ar</span>
+                                    }} {{ tr.field_ref.field_currency ? tr.field_ref.field_currency : "Ar" }}</span>
                             </div>
                         </div>
                         <div class="text-sm text-gray-800 bg-white rounded px-2 py-1 font-mono text-xs"
@@ -43,25 +42,25 @@
                         <div class=" border-t pt-1"></div>
                         <div v-for="(sum, comment) in totals.byComment" :key="comment" class="flex justify-between">
                             <span class="text-xs font-medium text-gray-700">#{{ comment }} :</span>
-                            <span class="text-xs font-bold text-gray-600">{{ sum.toLocaleString('fr-FR') }} Ar</span>
+                            <span class="text-xs font-bold text-gray-600">{{ sum.toLocaleString('fr-FR') }} {{ tr.field_currency ? tr.field_currency : "Ar" }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-medium text-gray-700">Total Positif :</span>
                             <span class="text-xs font-bold text-green-600">
-                                {{ totals.positive.toLocaleString('fr-FR') }} Ar
+                                {{ totals.positive.toLocaleString('fr-FR') }} {{ tr.field_currency ? tr.field_currency : "Ar" }}
                             </span>
                         </div>
 
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-medium text-gray-700">Total Négatif :</span>
                             <span class="text-xs font-bold text-red-600">
-                                {{ totals.negative.toLocaleString('fr-FR') }} Ar
+                                {{ totals.negative.toLocaleString('fr-FR') }} {{ tr.field_currency ? tr.field_currency : "Ar" }}
                             </span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-medium text-gray-700">Total:</span>
                             <span class="text-xs font-bold text-purple-600">{{
-                                Number(tr.field_total).toLocaleString('fr-FR') }} Ar</span>
+                                Number(tr.field_total).toLocaleString('fr-FR') }} {{ tr.field_currency ? tr.field_currency : "Ar" }}</span>
                         </div>
                     </div>
                     <div class="mt-2">
@@ -108,10 +107,11 @@ const queryOptions = ref({
         'field_expression',
         'field_note',
         'field_ref',
-        'field_total'
+        'field_total',
+        'field_currency'
     ],
     values: {
-        field_ref: ['title', 'nid', 'field_total', 'field_client']
+        field_ref: ['title', 'nid', 'field_total', 'field_client', 'field_currency']
     }
 })
 

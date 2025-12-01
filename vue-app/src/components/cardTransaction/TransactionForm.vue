@@ -12,7 +12,7 @@
                     </div>
                     <div class="h-4/5">
                         <label class="block text-xs font-medium text-gray-700 mb-1">Valeur d'Entrée</label>
-                        <div class="relative h-4/5">
+                        <div class="relative h-3/5">
                             <textarea v-model="inputValue"
                                 :class="{ 'border-red-500': errorMessage, 'border-gray-300': !errorMessage }"
                                 class="w-full h-full px-2 py-2 border rounded-lg text-sm min-h-20 overflow-hidden"
@@ -156,6 +156,7 @@ function resetInput() {
     hasError.value = false;
     dataResults.value = '';
     totalResults.value = '';
+    localStorage.removeItem("inputValue");
 }
 
 // Soumettre uniquement si pas d'erreur
@@ -205,6 +206,17 @@ function cancelEdit() {
     canEdit.value = false
     emit('cancelEdit')
 }
+
+// Charger la valeur au démarrage
+const saved = localStorage.getItem("inputValue");
+if (saved) {
+    inputValue.value = saved;
+}
+
+// Sauvegarder à chaque modification
+watch(inputValue, (val) => {
+    localStorage.setItem("inputValue", val);
+});
 
 watch(
     () => props.transToEdit,
