@@ -20,7 +20,7 @@
                     <input type="text" placeholder="Recherche par client" @keyup="searchClient"
                         v-model="searchKeywordClient"
                         class="w-full px-3 py-1 border border-gray-300 rounded-lg text-xs" />
-                    <i @click="selectClient('','')"
+                    <i @click="selectClient('', '')"
                         class="ri-close-line text-xl absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"></i>
                     <div v-if="showList"
                         class="max-h-48 overflow-y-auto border border-gray-300 !rounded-button bg-white absolute right-0 left-0 z-30">
@@ -66,11 +66,13 @@
                             <div class="text-xs text-gray-600 mb-1">Expression:</div>
                             <div class="text-sm text-gray-800 rounded mb-1 font-mono text-xs"
                                 v-if="transaction.field_ref">
-                                <div class="flex justify-between items-center py-1">
-                                    <span class="text-xs font-medium text-gray-700">Liaison: {{
-                                        transaction.field_ref.title }} =
-                                        {{ Number(transaction.field_ref.field_total).toLocaleString('fr-FR') }}
-                                        {{ transaction.field_ref.field_currency ? transaction.field_ref.field_currency : "Ar" }}</span>
+                                <div class="py-1">
+                                    <p class="text-xs font-medium text-gray-700">Liaison: </p>
+                                    <p class="ms-2" v-for="ref in transaction.field_ref" :key="ref.nid">{{
+                                        ref.title }} <span class="hidden">=
+                                        {{
+                                            Number(ref.field_total).toLocaleString('fr-FR')
+                                        }} {{ ref.field_currency ? ref.field_currency : "Ar" }}</span></p>
                                 </div>
                             </div>
                             <div class="text-sm text-gray-800 bg-white rounded px-2 py-1 font-mono text-xs"
@@ -81,7 +83,8 @@
                             <div class="flex justify-between items-center py-1 border-t pt-2">
                                 <span class="text-xs font-medium text-gray-700">Total:</span>
                                 <span class="text-sm font-bold text-green-600">{{
-                                    Number(transaction.field_total).toLocaleString('fr-FR') }} {{ transaction.field_currency ? transaction.field_currency : "Ar" }}</span>
+                                    Number(transaction.field_total).toLocaleString('fr-FR') }} {{
+                                        transaction.field_currency ? transaction.field_currency : "Ar" }}</span>
                             </div>
                         </div>
                         <div class="">
@@ -150,9 +153,9 @@ const queryOptions = ref({
         'field_total',
         'field_currency',
     ],
-    values: {
-        field_ref: ['title', 'nid', 'field_total', 'field_client', 'field_currency']
-    },
+    // values: {
+    //     field_ref: ['title', 'nid', 'field_total', 'field_client', 'field_currency']
+    // },
     sort: { val: 'nid', op: 'desc' },
     filters: {},
     pager: 0,

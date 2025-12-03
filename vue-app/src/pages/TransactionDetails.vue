@@ -26,12 +26,13 @@
                     <div>
                         <div class="text-xs text-gray-600 mb-1">Expression:</div>
                         <div class="text-sm text-gray-800 rounded mb-1 font-mono text-xs" v-if="tr.field_ref">
-                            <div class="flex justify-between items-center py-1">
-                                <span class="text-xs font-medium text-gray-700">Liaison: {{
-                                    tr.field_ref.title }} =
+                            <div class=" py-1">
+                                <p class="text-xs  mb-2 font-medium text-gray-700">Liaison: </p>
+                                <p class="ms-2" v-for="ref in tr.field_ref" :key="ref.nid">{{
+                                    ref.title }}<span class="hidden"> =
                                     {{
-                                        Number(tr.field_ref.field_total).toLocaleString('fr-FR')
-                                    }} {{ tr.field_ref.field_currency ? tr.field_ref.field_currency : "Ar" }}</span>
+                                        Number(ref.field_total).toLocaleString('fr-FR')
+                                    }} {{ ref.field_currency ? ref.field_currency : "Ar" }}</span></p>
                             </div>
                         </div>
                         <div class="text-sm text-gray-800 bg-white rounded px-2 py-1 font-mono text-xs"
@@ -110,9 +111,10 @@ const queryOptions = ref({
         'field_total',
         'field_currency'
     ],
-    values: {
-        field_ref: ['title', 'nid', 'field_total', 'field_client', 'field_currency']
-    }
+    // values: {
+    //     field_ref: ['title', 'nid']
+    // }
+    // 'field_total', 'field_client', 'field_currency'
 })
 
 const totals = computed(() => {

@@ -121,7 +121,7 @@ const form = reactive({
     title: "Ref",
     field_client: '',
     field_date: '',
-    field_ref: '',
+    field_ref: [],
     field_expression: '',
     field_note: '',
     field_total: '',
@@ -213,8 +213,8 @@ const setNidField = (data) => {
         isRequiredFieldRef.value = false;
         isLinked.value = false;
     }
-    if (data.nid) {
-        form.field_ref = parseInt(data.nid, 10);
+    if (data.nids.length) {
+        form.field_ref = data.nids.map(id => parseInt(id));
         totalRef.value = data.total
     } else {
         form.field_ref = '';
@@ -246,10 +246,7 @@ watch(
                 form.field_date = data.transactionInfo.field_date
                 if (data.transactionInfo.field_ref) {
                     const refObj = {
-                        nid: data.transactionInfo.field_ref.nid,
-                        total: data.transactionInfo.field_ref.field_total,
-                        title: data.transactionInfo.field_ref.title,
-                        currency: data.transactionInfo.field_ref.field_currency == "Ar" ? "Ar" : "Rmb",
+                        ref: data.transactionInfo.field_ref,
                         isLinked: true,
                     }
                     refInputValue.value = refObj;
@@ -258,9 +255,7 @@ watch(
                     isRequiredFieldRef.value = true;
                 } else {
                     refInputValue.value = {
-                        nid: '',
-                        total: '',
-                        title: '',
+                        ref: '',
                         isLinked: false,
                     };
                     isRequiredFieldRef.value = false;
