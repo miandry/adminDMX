@@ -38,7 +38,7 @@
                     <div class="flex-1">
                         <label class="text-xs flex gap-2">
                             <input type="checkbox" :value="tr.nid" v-model="refIds">
-                            <p><span class="font-medium text-gray-900">{{ tr.title }} </span> = <span
+                            <p><span class="font-medium text-gray-900">{{ tr.field_client.title }} </span> = <span
                                     class="text-gray-500">{{ tr?.field_total }} {{ tr?.field_currency ?
                                         tr?.field_currency :
                                         "Ar" }}</span></p>
@@ -47,31 +47,18 @@
                 </div>
             </div>
         </div>
-        <div v-if="showTransactionListEdit" @mousedown.prevent
-            class="max-h-48 overflow-y-auto border !rounded-button bg-white z-30 mt-4"
-            :class="[showErrorMsg ? 'border-red-500' : 'border-gray-300']">
-            <div v-if="transactionRefEdit.length" class="divide-y divide-gray-100  max-h-[100px] overflow-y-auto">
-                <div v-for="(tr, index) in transactionRefEdit" :key="index" :class="[
-                    'flex items-center space-x-3 px-3 py-2 hover:bg-gray-50 cursor-pointer customer-item border-t-0'
-                ]">
-                    <div class="flex-1">
-                        <label class="text-xs flex gap-2">
-                            <input type="checkbox" :value="tr.nid" v-model="refIds">
-                            <p><span class="font-medium text-gray-900">{{ tr.title }} </span> = <span
-                                    class="text-gray-500">{{ tr?.field_total }} {{ tr?.field_currency ?
-                                        tr?.field_currency :
-                                        "" }}</span></p>
-                        </label>
-                    </div>
-                </div>
-            </div>
+        <div class="mt-2" v-if="refDetails.length">
+            <span v-for="tr in refDetails" :key="tr" @click="removeTransaction(tr.nid)"
+                class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 inset-ring inset-ring-gray-500/10  border border-gray-300 me-1 mb-1">
+                {{ tr.field_client.title }} = {{ tr?.field_total }} {{ tr?.field_currency ? tr?.field_currency : "Ar" }}
+            </span>
         </div>
         <p v-if="showErrorMsg" class="text-red-500 text-xs mt-1">Ce champ est requis</p>
     </div>
 </template>
 
 <script setup>
-import { reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { useClientStore, useTransactionStore } from '../../stores';
 
 const clientStore = useClientStore();
@@ -91,6 +78,7 @@ const showErrorMsg = ref(false);
 const showTransactionList = ref(false);
 const showTransactionListEdit = ref(false);
 const refIds = ref([]);
+const refDetails = ref([]);
 const transactionRefEdit = ref([]);
 const totalChecked = ref(0);
 
@@ -124,6 +112,9 @@ const TransactionQueryOptions = ref({
     ],
     sort: { val: 'nid', op: 'desc' },
     filters: {},
+    values: {
+        field_ref: ['title', 'nid', 'field_total', 'field_client', 'field_currency']
+    },
     pager: 0,
     offset: 20
 })
@@ -155,25 +146,14 @@ const selectClient = async (nid) => {
     await transactionStore.fetchTransactions(TransactionQueryOptions.value);
     showTransactionList.value = true;
     showList.value = false;
-    // transactionRefEdit.value = value.ref
 }
 
-const clearSelectedTransaction = () => {
-    if (isLinked.value) {
-        showErrorMsg.value = true;
-    }
-    if (isLinked.value) {
-        data.required = true;
-    }
-    data.nid = null;
-    data.total = 0;
-    transRef.value = "";
-    isSelected.value = false;
-    showList.value = false;
-    showTransactionList.value = false;
-    searchKeywordClient.value = '';
-    emit('sendTransactionId', data);
-}
+
+const removeTransaction = (nid) => {
+    // Retire le nid de la liste des éléments sélectionnés
+    refIds.value = refIds.value.filter(id => id != nid);
+    refDetails.value = refDetails.value.filter(tr => tr.nid != nid);
+};
 
 watch(
     () => props.isSelected,
@@ -187,6 +167,9 @@ watch(
             }
             transactionRefEdit.value = value.ref
             refIds.value = value.ref.map(r => Number(r.nid))
+            refDetails.value = value.ref;
+            updateTotalsAndData(refIds.value);
+
         } else {
             isSelected.value = false
             transRef.value = '';
@@ -195,29 +178,50 @@ watch(
     { immediate: true }
 )
 
-watch(refIds, (ids) => {
-    // Filtrer les transactions cochées
-    const selected = transactionStore.transactions.rows.filter(tr =>
-        ids.includes(tr.nid)
-    );
+watch(refIds, (newIds, oldIds) => {
+    // Trouver ce qui est ajouté
+    const added = newIds.filter(id => !oldIds.includes(id));
+    // Trouver ce qui est supprimé
+    const removed = oldIds.filter(id => !newIds.includes(id));
 
-    // Calculer la somme des field_total
-    totalChecked.value = selected.reduce((sum, tr) => {
+    // 1. Ajouter les nouveaux
+    added.forEach(id => {
+        const tr = transactionStore.transactions.rows.find(t => t.nid == id);
+        if (tr && !refDetails.value.find(x => x.nid == tr.nid)) {
+            refDetails.value.push(tr);
+        }
+    });
+
+    // 2. Enlever ceux décochés
+    removed.forEach(id => {
+        refDetails.value = refDetails.value.filter(t => t.nid !== id);
+    });
+
+    updateTotalsAndData(newIds);
+});
+
+function updateTotalsAndData(newIds) {
+
+    // Recalcul total
+    totalChecked.value = refDetails.value.reduce((sum, tr) => {
         const num = Number(tr.field_total) || 0;
         return sum + num;
     }, 0);
 
-    data.total = parseFloat(totalChecked.value);
-    data.nids = refIds.value;
-    if (isLinked.value && !ids.length) {
+    // Mise à jour data
+    data.total = totalChecked.value;
+    data.nids = newIds;
+
+    // Validation si lien obligatoire
+    if (isLinked.value && !newIds.length) {
         data.required = true;
-        showErrorMsg.value = true
+        showErrorMsg.value = true;
     } else {
-        showErrorMsg.value = false
+        showErrorMsg.value = false;
     }
 
     emit('sendTransactionId', data);
-});
+}
 </script>
 
 <style></style>

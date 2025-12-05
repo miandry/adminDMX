@@ -69,13 +69,13 @@
                                 <div class="py-1">
                                     <p class="text-xs font-medium text-gray-700">Liaison: </p>
                                     <p class="ms-2" v-for="ref in transaction.field_ref" :key="ref.nid">{{
-                                        ref.title }} <span class="hidden">=
+                                        ref.field_client.title }} <span>=
                                         {{
                                             Number(ref.field_total).toLocaleString('fr-FR')
                                         }} {{ ref.field_currency ? ref.field_currency : "Ar" }}</span></p>
                                 </div>
                             </div>
-                            <div class="text-sm text-gray-800 bg-white rounded px-2 py-1 font-mono text-xs"
+                            <div class="text-sm text-gray-800 bg-white rounded px-2 py-1 font-mono text-xs max-h-[100px] overflow-y-auto"
                                 v-html="transaction.field_expression.replace(/\r?\n/g, '<br>')">
                             </div>
                         </div>
@@ -153,9 +153,9 @@ const queryOptions = ref({
         'field_total',
         'field_currency',
     ],
-    // values: {
-    //     field_ref: ['title', 'nid', 'field_total', 'field_client', 'field_currency']
-    // },
+    values: {
+        field_ref: ['title', 'nid', 'field_total', 'field_client', 'field_currency']
+    },
     sort: { val: 'nid', op: 'desc' },
     filters: {},
     pager: 0,

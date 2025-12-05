@@ -43,7 +43,7 @@
                     <i class="ri-save-line mr-2"></i>
                     Soumettre le Calcul
                 </button>
-                <button @click="$emit('openHistory')"
+                <button @click="OpenHistoryPannel"
                     class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2.5 px-4 !rounded-button font-medium text-sm">
                     <i class="ri-history-line"></i>
                 </button>
@@ -147,6 +147,11 @@ function calculateResults() {
     }
 }
 
+const OpenHistoryPannel = () => {
+    cancelEdit();
+    emit('openHistory');
+}
+
 
 // Réinitialiser l'entrée et le résultat
 function resetInput() {
@@ -224,7 +229,9 @@ watch(
         if (val) {
             canEdit.value = true
             inputValue.value = cleanExpressionLines(val.field_expression);
-            calculateResults();
+            hasError.value = false;
+            totalResults.value = '';
+            // calculateResults();
         }
     },
     { deep: true, immediate: true }

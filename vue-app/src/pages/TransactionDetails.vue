@@ -29,7 +29,7 @@
                             <div class=" py-1">
                                 <p class="text-xs  mb-2 font-medium text-gray-700">Liaison: </p>
                                 <p class="ms-2" v-for="ref in tr.field_ref" :key="ref.nid">{{
-                                    ref.title }}<span class="hidden"> =
+                                    ref.field_client.title }}<span> =
                                     {{
                                         Number(ref.field_total).toLocaleString('fr-FR')
                                     }} {{ ref.field_currency ? ref.field_currency : "Ar" }}</span></p>
@@ -111,10 +111,10 @@ const queryOptions = ref({
         'field_total',
         'field_currency'
     ],
-    // values: {
-    //     field_ref: ['title', 'nid']
-    // }
-    // 'field_total', 'field_client', 'field_currency'
+    values: {
+        field_ref: ['title', 'nid','field_total', 'field_client', 'field_currency']
+    }
+    
 })
 
 const totals = computed(() => {

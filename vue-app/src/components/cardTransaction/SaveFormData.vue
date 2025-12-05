@@ -3,7 +3,7 @@
     <div>
         <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
             :class="[showClientForm ? 'hidden' : '']">
-            <div class="bg-white mx-4 rounded-lg shadow-lg w-full max-w-sm overflow-y-auto [@media(max-height:480px)]:h-[400px]">
+            <div class="bg-white mx-4 rounded-lg shadow-lg w-full max-w-sm overflow-y-auto max-h-[95vh] [@media(max-height:480px)]:h-[400px]">
                 <div class="p-4 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900">
                         Enregistrer le Calcul
