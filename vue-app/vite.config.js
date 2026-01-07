@@ -4,7 +4,7 @@ import { resolve } from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  base: "/drupal/transaction.local/",
+  base: "/",
   plugins: [
     vue(),
     VitePWA({
@@ -15,8 +15,8 @@ export default defineConfig({
       manifest: {
         name: "Drupal Vue PWA",
         short_name: "VuePWA",
-        start_url: "/drupal/transaction.local/",
-        scope: "/drupal/transaction.local/",
+        start_url: "/",
+        scope: "/",
         display: "standalone",
         background_color: "#ffffff",
         theme_color: "#0f172a",
