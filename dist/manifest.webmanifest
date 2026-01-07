@@ -1,1 +1,1 @@
-{"name":"Drupal Vue PWA","short_name":"VuePWA","start_url":"/","display":"standalone","background_color":"#ffffff","theme_color":"#0f172a","lang":"en","scope":"/"}
+{"name":"Drupal Vue PWA","short_name":"VuePWA","start_url":"/drupal/transaction.local/","display":"standalone","background_color":"#ffffff","theme_color":"#0f172a","lang":"en","scope":"/drupal/transaction.local/"}

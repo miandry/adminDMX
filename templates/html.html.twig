@@ -49,7 +49,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
     />
     {# 123456789 #}
-    <link rel="manifest" href="{{ directory }}/dist/manifest.webmanifest">
+    <link rel="manifest" href="/drupal/transaction.local/{{ directory }}/dist/manifest.webmanifest">
     <meta name="theme-color" content="#0f172a">
 
     <script>
@@ -170,6 +170,20 @@
     {{ page }}
     {{ page_bottom }}
     <js-bottom-placeholder token="{{ placeholder_token }}">
-    
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+        navigator.serviceWorker.register(
+            '/drupal/transaction.local/sw.js'
+        )
+        .then(function (reg) {
+            console.log('Service Worker enregistré', reg.scope);
+        })
+        .catch(function (err) {
+            console.error('Erreur SW', err);
+        });
+        });
+    }
+    </script>
   </body>
 </html>
