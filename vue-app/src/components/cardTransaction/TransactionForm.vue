@@ -58,6 +58,7 @@
                 </button>
             </div>
         </section>
+        <router-link :to="'/about'">About</router-link>
     </div>
 </template>
 
