@@ -18,21 +18,30 @@ export const useTransactionStore = defineStore("transaction", () => {
   // fetchTransactions: si append=true, on ajoute les nouvelles données
   async function fetchTransactions(options, append = false) {
     loading.value = true;
+    error.value = null;
     try {
       const query = buildQueryParams(options);
       const response = await getTransactions(query);
 
       const data = response.data;
 
+      if (!data || !Array.isArray(data.rows)) {
+        throw new Error("Réponse historique invalide");
+      }
+
       if (append && transactions.value.rows.length) {
         // Ajouter les nouvelles données à la liste existante
         transactions.value.rows = [...transactions.value.rows, ...data.rows];
+        transactions.value.total = data.total ?? transactions.value.total;
       } else {
         // Remplacer les données
-        transactions.value = data;
+        transactions.value = { rows: data.rows, total: data.total || 0 };
       }
     } catch (err) {
       error.value = err;
+      if (!append) {
+        transactions.value = { rows: [], total: 0 };
+      }
     } finally {
       loading.value = false;
     }

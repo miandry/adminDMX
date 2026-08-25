@@ -52,7 +52,7 @@
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex-1">
                             <div class="text-sm font-medium text-gray-900 mb-1">
-                                {{ transaction.field_client.title }}
+                                {{ transaction.field_client?.title || '—' }}
                             </div>
                             <div class="text-sm font-medium text-green-500">{{ transaction.title }}</div>
                             <div class="text-xs text-gray-500">{{ transaction.field_date }}</div>
@@ -65,26 +65,28 @@
                         <div>
                             <div class="text-xs text-gray-600 mb-1">Expression:</div>
                             <div class="text-sm text-gray-800 rounded mb-1 font-mono text-xs"
-                                v-if="transaction.field_ref">
+                                v-if="getRefs(transaction.field_ref).length">
                                 <div class="py-1">
                                     <p class="text-xs font-medium text-gray-700">Liaison: </p>
-                                    <p class="ms-2" v-for="ref in transaction.field_ref" :key="ref.nid">{{
-                                        ref.field_client.title }} <span>=
-                                        {{
-                                            Number(ref.field_total).toLocaleString('fr-FR')
-                                        }} {{ ref.field_currency ? ref.field_currency : "Ar" }}</span></p>
+                                    <p class="ms-2" v-for="ref in getRefs(transaction.field_ref)" :key="ref.nid">
+                                        {{ ref.field_client?.title || ref.title }}
+                                        <span>=
+                                            {{ Number(ref.field_total || 0).toLocaleString('fr-FR') }}
+                                            {{ ref.field_currency || 'Ar' }}
+                                        </span>
+                                    </p>
                                 </div>
                             </div>
                             <div class="text-sm text-gray-800 bg-white rounded px-2 py-1 font-mono text-xs max-h-[100px] overflow-y-auto"
-                                v-html="transaction.field_expression.replace(/\r?\n/g, '<br>')">
+                                v-html="formatExpression(transaction.field_expression)">
                             </div>
                         </div>
                         <div class="space-y-1">
                             <div class="flex justify-between items-center py-1 border-t pt-2">
                                 <span class="text-xs font-medium text-gray-700">Total:</span>
                                 <span class="text-sm font-bold text-green-600">{{
-                                    Number(transaction.field_total).toLocaleString('fr-FR') }} {{
-                                        transaction.field_currency ? transaction.field_currency : "Ar" }}</span>
+                                    Number(transaction.field_total || 0).toLocaleString('fr-FR') }} {{
+                                        transaction.field_currency || 'Ar' }}</span>
                             </div>
                         </div>
                         <div class="">
@@ -266,6 +268,19 @@ const searchClient = async () => {
     if (searchKeywordClient.value == '') {
         showList.value = false;
     }
+}
+
+const formatExpression = (expression) => {
+    if (!expression) return ''
+    return String(expression).replace(/\r?\n/g, '<br>')
+}
+
+const getRefs = (field_ref) => {
+    if (!field_ref) return []
+    if (Array.isArray(field_ref)) {
+        return field_ref.filter((ref) => ref && typeof ref === 'object')
+    }
+    return typeof field_ref === 'object' ? [field_ref] : []
 }
 
 defineExpose({

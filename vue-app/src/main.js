@@ -5,11 +5,13 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import CardTransaction from './pages/CardTransaction.vue'
 import TransactionDetails from './pages/TransactionDetails.vue'
+import ListCard from './pages/ListCard.vue'
 
 
 const routes = [
-  { path: '/', component: CardTransaction, name: 'home' },
-  { path: '/transaction/:id', component: TransactionDetails, name: 'transaction.details' }
+  { path: '/', component: CardTransaction, name: 'home', meta: { title: 'Calcul' } },
+  { path: '/list_card', component: ListCard, name: 'list.card', meta: { title: 'Transactions' } },
+  { path: '/transaction/:id', component: TransactionDetails, name: 'transaction.details', meta: { title: 'Détails' } }
 ]
 
 const router = createRouter({

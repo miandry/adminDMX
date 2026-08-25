@@ -5,20 +5,21 @@ const api = axios.create({
   headers: {
     Accept: "application/json",
   },
+  withCredentials: true,
 });
 
-// /api/v2/[entity]/[content_type]
+// /api_solutions/api/v2/[entity]/[content_type]
 
 export function getListUser(parameters = null) {
-  let path = "/api/v2/users";
+  let path = "/api_solutions/api/v2/users";
   if (parameters) {
-    path = path + "&" + parameters;
+    path = path + "?" + parameters;
   }
   return api.get(path);
 }
 
 export function getLists(entity, content_type, parameters = null) {
-  let path = "/api/v2/" + entity + "/" + content_type;
+  let path = "/api_solutions/api/v2/" + entity + "/" + content_type;
   if (parameters) {
     path = path + "?" + parameters;
   }
@@ -26,7 +27,7 @@ export function getLists(entity, content_type, parameters = null) {
 }
 
 export function getDetails(entity, content_type, id, parameters = null) {
-  let path = "/api/v2/" + entity + "/" + content_type + "/" + id;
+  let path = "/api_solutions/api/v2/" + entity + "/" + content_type + "/" + id;
   if (parameters) {
     path = path + "?" + parameters;
   }
@@ -34,7 +35,7 @@ export function getDetails(entity, content_type, id, parameters = null) {
 }
 
 export function saveItem(newItem) {
-  let path = "/crud/save";
+  let path = "/api_solutions/save";
   return api.post(path, newItem);
 }
 

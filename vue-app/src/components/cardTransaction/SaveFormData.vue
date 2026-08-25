@@ -285,6 +285,7 @@ watch(
 onMounted(() => {
     const today = new Date().toISOString().substr(0, 10) // format yyyy-mm-dd
     form.field_date = today
+    fetchClients()
 })
 </script>
 

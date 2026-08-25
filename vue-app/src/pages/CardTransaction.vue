@@ -1,7 +1,7 @@
 <template>
     <div>
         <PageLoader v-if="transactionStore.loading" />
-        <main class="p-3 h-screen overflow-y-auto">
+        <main class="p-3 h-[calc(100vh-3.5rem)] overflow-y-auto">
             <TransactionForm @openHistory="toggleHistory" @openSaveForm="toggleSaveForm" ref="transactionFormRef"
                 :transToEdit="editDataTrans" @cancelEdit="cancelEdit" />
         </main>
